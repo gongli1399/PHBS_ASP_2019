@@ -256,10 +256,12 @@ class ModelBsmMC:
         forward = spot * np.exp(texp*(self.intr - self.divr))
         delta_t = 0.01
         step = int(texp/delta_t)
-
+        
+        volmock = np.ones((self.sample, step+1))
         np.random.seed(12345)
         Z1 = np.random.normal(size=(self.sample, step))
-        volmock = sigma * np.cumprod(np.exp(self.alpha*np.sqrt(delta_t)*Z1 - 0.5*self.alpha**2*delta_t), axis = 1)
+        volmock[:,1:] = np.cumprod(np.exp(self.alpha*np.sqrt(delta_t)*Z1 - 0.5*self.alpha**2*delta_t), axis = 1)
+        volmock = sigma * volmock[:,:-1]
 
         np.random.seed()
         W1 = self.rho * Z1 + np.sqrt(1 - self.rho**2) * np.random.normal(size = (self.sample, step))
@@ -314,10 +316,12 @@ class ModelNormalMC:
         forward = spot * np.exp(texp*(self.intr - self.divr))
         delta_t = 0.01
         step = int(texp/delta_t)
-
+        
+        volmock = np.ones((self.sample, step+1))
         np.random.seed(12345)
         Z1 = np.random.normal(size=(self.sample, step))
-        volmock = sigma * np.cumprod(np.exp(self.alpha*np.sqrt(delta_t)*Z1 - 0.5*self.alpha**2*delta_t), axis = 1)
+        volmock[:,1:] = np.cumprod(np.exp(self.alpha*np.sqrt(delta_t)*Z1 - 0.5*self.alpha**2*delta_t), axis = 1)
+        volmock = sigma * volmock[:,:-1]
 
         np.random.seed()
         W1 = self.rho * Z1 + np.sqrt(1 - self.rho**2) * np.random.normal(size = (self.sample, step))
